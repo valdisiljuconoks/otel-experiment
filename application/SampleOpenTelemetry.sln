@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOpenTelemetry", "Samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnotherSampleOpenTelemetry", "AnotherSampleOpenTelemetry\AnotherSampleOpenTelemetry.csproj", "{E2C85E3F-21F1-414C-91B1-AD6FE5ED09A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{A15FD16F-C10A-4B6D-B6C6-CB0C1FD7F94A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{A15FD16F-C10A-4B6D-B6C6-CB0C1FD7F94A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

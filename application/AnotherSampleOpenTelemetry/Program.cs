@@ -50,6 +50,8 @@ var app = builder.Build();
 
 var activitySource = new ActivitySource("MyApplicationActivitySource");
 
+app.MapGet("/", () => Results.Ok("Awaiting for requests..."));
+
 app.MapGet("/compute", async () =>
 {
     using (var activity = activitySource.StartActivity("Compute data"))

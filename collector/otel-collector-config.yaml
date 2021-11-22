@@ -16,6 +16,12 @@ exporters:
   file:
     path: /etc/output/logs.json
 
+  azuremonitor:
+    endpoint: "https://dc.services.visualstudio.com/v2/track"
+    instrumentation_key: 5880bf03-438b-4c3c-aefc-586f83e73e32
+    maxbatchsize: 100
+    maxbatchinterval: 10s
+
 processors:
   batch:
 
@@ -24,7 +30,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, zipkin]
+      exporters: [logging, zipkin, azuremonitor]
     metrics:
       receivers: [otlp]
       processors: [batch]
