@@ -23,6 +23,7 @@ public class Function1
 
         activity?.AddBaggage("product.id", "12345");
 
+        // call again /compute endpoint
 
         log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
     }

@@ -51,7 +51,14 @@ public class IndexModel : PageModel
             _logger.LogInformation("Response2 length: {Length}", str2.Length);
 
             // emitting message on the queue
-            await _sender.SendMessageAsync(new ServiceBusMessage("testing"));
+            var serviceBusMessage = new ServiceBusMessage("testing");
+
+            foreach (var baggage in Activity.Current?.Baggage ?? Array.Empty<KeyValuePair<string, string?>>())
+            {
+                serviceBusMessage.ApplicationProperties.Add(baggage.Key, baggage.Value);
+            }
+
+            await _sender.SendMessageAsync(serviceBusMessage);
         }
 
         return Page();
