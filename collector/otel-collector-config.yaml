@@ -22,6 +22,19 @@ exporters:
     maxbatchsize: 100
     maxbatchinterval: 10s
 
+  elastic:
+    apm_server_url: test
+
+  # elasticsearch:
+  #   endpoints: [https://otel-logs-elasticsearch.es.westeurope.azure.elastic-cloud.com:9243]
+  #   cloudid: otel-logs-elasticsearch:d2VzdGV1cm9wZS5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo5MjQzJDIyNzBkOTJkYWRiOTQxNTdhNjliYmE5MmZjNGQ5MmMxJGNhMDFiYTI1ZWZkODQ2YzlhMDg3NzFkMzlhMmUyODQx
+
+  # awscloudwatchlogs:
+  #   log_group_name: "otel-research-testing-logs"
+  #   log_stream_name: "otel-research-testing-logs-stream"
+  #   region: "eu-north-1"
+  #   endpoint: "logs.eu-north-1.amazonaws.com"
+
 processors:
   batch:
 

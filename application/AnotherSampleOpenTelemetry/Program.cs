@@ -1,36 +1,34 @@
-using System.Diagnostics.Metrics;
 using System.Diagnostics;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using OpenTelemetry;
 using OpenTelemetry.Logs;
 
 // This is required if the collector doesn't expose an https endpoint
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenTelemetryMetrics(builder =>
+builder.Services.AddOpenTelemetryMetrics(b =>
 {
-    builder.AddHttpClientInstrumentation();
-    builder.AddAspNetCoreInstrumentation();
-    builder.AddMeter("MyApplicationMetrics");
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.AddHttpClientInstrumentation();
+    b.AddAspNetCoreInstrumentation();
+    b.AddMeter("MyApplicationMetrics");
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
-builder.Services.AddOpenTelemetryTracing(builder =>
+builder.Services.AddOpenTelemetryTracing(b =>
 {
-    builder.AddAspNetCoreInstrumentation();
-    builder.AddHttpClientInstrumentation();
-    builder.AddSource("MyApplicationActivitySource");
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.AddAspNetCoreInstrumentation();
+    b.AddHttpClientInstrumentation();
+    b.AddSource("AnotherSampleOpenTelemetry");
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
-builder.Logging.AddOpenTelemetry(builder =>
+builder.Logging.AddOpenTelemetry(b =>
 {
-    builder.IncludeFormattedMessage = true;
-    builder.IncludeScopes = true;
-    builder.ParseStateValues = true;
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.IncludeFormattedMessage = true;
+    b.IncludeScopes = true;
+    b.ParseStateValues = true;
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
 var listener = new ActivityListener
@@ -48,13 +46,13 @@ ActivitySource.AddActivityListener(listener);
 
 var app = builder.Build();
 
-var activitySource = new ActivitySource("MyApplicationActivitySource");
+var activitySource = new ActivitySource("AnotherSampleOpenTelemetry");
 
 app.MapGet("/", () => Results.Ok("Awaiting for requests..."));
 
 app.MapGet("/compute", async () =>
 {
-    using (var activity = activitySource.StartActivity("Compute data"))
+    using (var _ = activitySource.StartActivity("Compute data", ActivityKind.Server))
     {
         await Task.Delay(500);
     }

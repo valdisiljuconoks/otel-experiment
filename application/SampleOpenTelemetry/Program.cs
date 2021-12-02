@@ -7,28 +7,28 @@ using OpenTelemetry.Logs;
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenTelemetryMetrics(builder =>
+builder.Services.AddOpenTelemetryMetrics(b =>
 {
-    builder.AddHttpClientInstrumentation();
-    builder.AddAspNetCoreInstrumentation();
-    builder.AddMeter("MyApplicationMetrics");
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.AddHttpClientInstrumentation();
+    b.AddAspNetCoreInstrumentation();
+    b.AddMeter("SampleOpenTelemetryMetrics");
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
-builder.Services.AddOpenTelemetryTracing(builder =>
+builder.Services.AddOpenTelemetryTracing(b =>
 {
-    builder.AddAspNetCoreInstrumentation();
-    builder.AddHttpClientInstrumentation();
-    builder.AddSource("MyApplicationActivitySource");
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.AddAspNetCoreInstrumentation();
+    b.AddHttpClientInstrumentation();
+    b.AddSource("SampleOpenTelemetry");
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
-builder.Logging.AddOpenTelemetry(builder =>
+builder.Logging.AddOpenTelemetry(b =>
 {
-    builder.IncludeFormattedMessage = true;
-    builder.IncludeScopes = true;
-    builder.ParseStateValues = true;
-    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
+    b.IncludeFormattedMessage = true;
+    b.IncludeScopes = true;
+    b.ParseStateValues = true;
+    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
 });
 
 builder.Services.AddRazorPages();

@@ -7,4 +7,12 @@
 
 <div>
     TraceID: @(Model.TraceId ?? "--")
+
+    <form method="post">
+        <label asp-for="CorrelationKey">Correlation Key:</label>
+        <input asp-for="CorrelationKey"/>
+        @Html.AntiForgeryToken()
+
+        <button type="submit">Submit</button>
+    </form>
 </div>
