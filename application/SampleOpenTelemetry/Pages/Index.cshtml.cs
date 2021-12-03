@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,19 +29,30 @@ public class IndexModel : PageModel
         _sender = _client.CreateSender("otel-sameple-queue");
     }
 
-    public string? TraceId { get; set; }
+    [BindProperty] public string? ActionId { get; set; }
+    [BindProperty] public string ProductId { get; set; }
 
-    [BindProperty] public string CorrelationKey { get; set; }
+    public IActionResult OnGet()
+    {
+        _activitySource.StartActivity("On GET.");
+
+        ActionId = Activity.Current?.Id;
+
+        return Page();
+    }
 
     public async Task<IActionResult> OnPost()
     {
         _requestCounter.Add(1);
 
-        using (var activity = _activitySource.StartActivity("Get data"))
+        if (string.IsNullOrEmpty(ActionId))
         {
-            activity?.AddBaggage("product.id", "12345");
+            throw new InvalidOperationException("Argument " + nameof(ActionId) + " is null");
+        }
 
-            TraceId = activity?.TraceId.ToString();
+        using (var activity = _activitySource.StartActivity("Get data", ActivityKind.Server, ActionId))
+        {
+            activity?.AddBaggage("product.id", ProductId);
 
             var str1 = await _httpClient.GetStringAsync("https://example.com");
             var str2 = await _httpClient.GetStringAsync("https://www.google.com");

@@ -1,0 +1,26 @@
+{
+  "name": "SampleOpenTelemetry",
+  "version": "1.0.0",
+  "description": "",
+  "private": "true",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/api": "^1.0.3",
+    "@opentelemetry/context-zone": "^1.0.1",
+    "@opentelemetry/exporter-collector-grpc": "^0.25.0",
+    "@opentelemetry/instrumentation-document-load": "^0.27.0",
+    "@opentelemetry/instrumentation-user-interaction": "^0.27.0",
+    "@opentelemetry/instrumentation-xml-http-request": "^0.27.0",
+    "@opentelemetry/sdk-trace-web": "^1.0.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1"
+  }
+}

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Extensions.FileProviders;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Logs;
@@ -48,6 +49,11 @@ var listener = new ActivityListener
 };
 ActivitySource.AddActivityListener(listener);
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "dist")),
+    RequestPath = "/dist"
+});
 app.UseRouting();
 app.MapRazorPages();
 
