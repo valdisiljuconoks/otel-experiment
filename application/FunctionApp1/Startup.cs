@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 [assembly: FunctionsStartup(typeof(Startup))]
@@ -23,6 +24,7 @@ internal class Startup : FunctionsStartup
     {
         builder.Services.AddOpenTelemetryTracing(b =>
         {
+            b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("FunctionApp1"));
             b.AddHttpClientInstrumentation();
             b.AddSource("AzureFunctionsOpenTelemetry");
             b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
@@ -30,6 +32,7 @@ internal class Startup : FunctionsStartup
 
         builder.AddOpenTelemetry(b =>
         {
+            b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("FunctionApp1"));
             b.IncludeFormattedMessage = true;
             b.IncludeScopes = true;
             b.ParseStateValues = true;

@@ -3,13 +3,16 @@ using Microsoft.Extensions.FileProviders;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 
 // This is required if the collector doesn't expose an https endpoint
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddOpenTelemetryMetrics(b =>
 {
+    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("SampleOpenTelemetry"));
     b.AddHttpClientInstrumentation();
     b.AddAspNetCoreInstrumentation();
     b.AddMeter("SampleOpenTelemetryMetrics");
@@ -18,6 +21,7 @@ builder.Services.AddOpenTelemetryMetrics(b =>
 
 builder.Services.AddOpenTelemetryTracing(b =>
 {
+    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("SampleOpenTelemetry"));
     b.AddAspNetCoreInstrumentation();
     b.AddHttpClientInstrumentation();
     b.AddSource("SampleOpenTelemetry");
@@ -26,6 +30,7 @@ builder.Services.AddOpenTelemetryTracing(b =>
 
 builder.Logging.AddOpenTelemetry(b =>
 {
+    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("SampleOpenTelemetry"));
     b.IncludeFormattedMessage = true;
     b.IncludeScopes = true;
     b.ParseStateValues = true;

@@ -2,12 +2,14 @@
 using Microsoft.Data.SqlClient;
 using OpenTelemetry.Trace;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 
 // This is required if the collector doesn't expose an https endpoint
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 using var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .SetSampler(new AlwaysOnSampler())
+    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ConsoleApp1"))
     .AddSource("MyApplicationBackgroundWorkerActivitySource")
     .AddSqlClientInstrumentation(opt =>
     {
