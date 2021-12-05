@@ -2,6 +2,11 @@ receivers:
   otlp:
     protocols:
       grpc:
+      http:
+        cors_allowed_origins:
+        - https://localhost:7258
+        cors_allowed_headers:
+        - "*"
 
 exporters:
   prometheus:
