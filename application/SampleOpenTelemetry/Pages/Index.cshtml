@@ -33,6 +33,8 @@
         <input asp-for="ProductId"/>
         @Html.AntiForgeryToken()
 
+        <button type="button" id="ajax-call-button">Make AJAX call</button>
+        <br/>
         <button type="submit">Submit</button>
 
         <input asp-for="ActionId" type="hidden"/>

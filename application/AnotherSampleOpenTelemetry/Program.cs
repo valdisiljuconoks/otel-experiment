@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 // This is required if the collector doesn't expose an https endpoint
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -40,28 +40,40 @@ var listener = new ActivityListener
     ShouldListenTo = _ => true,
     ActivityStopped = activity =>
     {
-        foreach (var (key, value) in activity.Baggage)
-        {
-            activity.AddTag(key, value);
-        }
+        foreach (var (key, value) in activity.Baggage) activity.AddTag(key, value);
     }
 };
 ActivitySource.AddActivityListener(listener);
+var activitySource = new ActivitySource("AnotherSampleOpenTelemetry");
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("_FrontendCors",
+        b =>
+        {
+            b.WithOrigins("https://localhost:7258");
+            b.WithHeaders("traceparent");
+        });
+});
 
 var app = builder.Build();
 
-var activitySource = new ActivitySource("AnotherSampleOpenTelemetry");
+app.UseCors();
 
 app.MapGet("/", () => Results.Ok("Awaiting for requests..."));
 
-app.MapGet("/compute", async () =>
+app.Map("/compute", async (HttpContext context) =>
 {
-    using (var _ = activitySource.StartActivity("Compute data", ActivityKind.Server))
-    {
-        await Task.Delay(500);
-    }
+    using (var _ = activitySource.StartActivity("Compute data", ActivityKind.Server)) { await Task.Delay(500); }
 
     return Results.Ok();
-});
+}).RequireCors("_FrontendCors");
+
+app.Map("/compute-for-frontend", async (HttpContext context) =>
+{
+    using (var _ = activitySource.StartActivity("Frontend compute data", ActivityKind.Server)) { await Task.Delay(1200); }
+
+    return Results.Ok();
+}).RequireCors("_FrontendCors");
 
 app.Run();

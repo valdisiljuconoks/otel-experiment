@@ -10,7 +10,6 @@ namespace SampleOpenTelemetry.Pages;
 public class IndexModel : PageModel
 {
     private readonly ActivitySource _activitySource;
-    private readonly ServiceBusClient _client;
     private readonly HttpClient _httpClient;
     private readonly ILogger<IndexModel> _logger;
     private readonly Counter<int> _requestCounter;
@@ -25,8 +24,8 @@ public class IndexModel : PageModel
         _requestCounter = meter.CreateCounter<int>("compute_requests");
         _httpClient = new HttpClient();
 
-        _client = new ServiceBusClient(config.GetConnectionString("ServiceBusConnectionString"));
-        _sender = _client.CreateSender("otel-sameple-queue");
+        var client = new ServiceBusClient(config.GetConnectionString("ServiceBusConnectionString"));
+        _sender = client.CreateSender("otel-sameple-queue");
     }
 
     [BindProperty] public string? ActionId { get; set; }
@@ -54,13 +53,11 @@ public class IndexModel : PageModel
         {
             activity?.AddBaggage("product.id", ProductId);
 
-            var str1 = await _httpClient.GetStringAsync("https://example.com");
-            var str2 = await _httpClient.GetStringAsync("https://www.google.com");
+            var str1 = await _httpClient.GetStringAsync("https://www.google.com");
 
             await _httpClient.GetStringAsync("https://localhost:7259/compute");
 
             _logger.LogInformation("Response1 length: {Length}", str1.Length);
-            _logger.LogInformation("Response2 length: {Length}", str2.Length);
 
             // emitting message on the queue
             var serviceBusMessage = new ServiceBusMessage("testing");

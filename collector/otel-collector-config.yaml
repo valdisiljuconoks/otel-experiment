@@ -8,11 +8,16 @@ receivers:
         cors_allowed_headers:
         - "*"
 
+processors:
+  batch:
+  # queued_retry:
+
 exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
 
   logging:
+    #loglevel: debug
 
   zipkin:
     endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
@@ -39,9 +44,6 @@ exporters:
   #   log_stream_name: "otel-research-testing-logs-stream"
   #   region: "eu-north-1"
   #   endpoint: "logs.eu-north-1.amazonaws.com"
-
-processors:
-  batch:
 
 service:
   pipelines:
