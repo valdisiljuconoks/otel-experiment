@@ -35,6 +35,11 @@ exporters:
   elastic:
     apm_server_url: test
 
+  otlp/elastic:
+    endpoint: test
+    headers:
+      Authorization: "Bearer 12345"
+
   # elasticsearch:
   #   endpoints: [https://otel-logs-elasticsearch.es.westeurope.azure.elastic-cloud.com:9243]
   #   cloudid: otel-logs-elasticsearch:d2VzdGV1cm9wZS5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo5MjQzJDIyNzBkOTJkYWRiOTQxNTdhNjliYmE5MmZjNGQ5MmMxJGNhMDFiYTI1ZWZkODQ2YzlhMDg3NzFkMzlhMmUyODQx

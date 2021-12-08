@@ -45,8 +45,12 @@ provider.register({
 registerInstrumentations({
     instrumentations: [
         //new DocumentLoadInstrumentation(),
+        //new UserInteractionInstrumentation(),
         new XMLHttpRequestInstrumentation({
             propagateTraceHeaderCorsUrls: /https:\/\/localhost:7259.+/,
+            applyCustomAttributesOnSpan: (span) => {
+                span.setAttribute('product.id', 12345);
+            }
         })
     ]
 });
@@ -61,8 +65,11 @@ window.onload = () => {
         const metaElement = Array.from(document.getElementsByTagName('meta')).find(e => e.getAttribute('name') === 'traceparent');
         const traceparent = (metaElement && metaElement.content) || '';
 
-        propagation.setBaggage(context.active(), propagation.createBaggage({ "product.id": 12345 }));
+        //propagation.setBaggage(context.active(), propagation.createBaggage({ "product.id": 12345 }));
+
         const span = tracer.startSpan("Calling compute for FE...", {}, propagation.extract(ROOT_CONTEXT, { traceparent }));
+
+        span.setAttribute("product.id", 12345);
 
         context.with(trace.setSpan(context.active(), span), () => {
             var xhttp = new XMLHttpRequest();
