@@ -1,49 +1,14 @@
 using System.Diagnostics;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using OpenTelemetry.Common;
 
 // This is required if the collector doesn't expose an https endpoint
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenTelemetryMetrics(b =>
-{
-    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AnotherSampleOpenTelemetry"));
-    b.AddHttpClientInstrumentation();
-    b.AddAspNetCoreInstrumentation();
-    b.AddMeter("MyApplicationMetrics");
-    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
-});
 
-builder.Services.AddOpenTelemetryTracing(b =>
-{
-    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AnotherSampleOpenTelemetry"));
-    b.AddAspNetCoreInstrumentation();
-    b.AddHttpClientInstrumentation();
-    b.AddSource("AnotherSampleOpenTelemetry");
-    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
-});
+builder.AddObservability("AnotherSampleOpenTelemetry", "MyApplicationMetrics", new Uri("http://localhost:4317"));
+builder.AddActivityBaggagePropagation();
 
-builder.Logging.AddOpenTelemetry(b =>
-{
-    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AnotherSampleOpenTelemetry"));
-    b.IncludeFormattedMessage = true;
-    b.IncludeScopes = true;
-    b.ParseStateValues = true;
-    b.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));
-});
-
-var listener = new ActivityListener
-{
-    ShouldListenTo = _ => true,
-    ActivityStopped = activity =>
-    {
-        foreach (var (key, value) in activity.Baggage) activity.AddTag(key, value);
-    }
-};
-ActivitySource.AddActivityListener(listener);
 var activitySource = new ActivitySource("AnotherSampleOpenTelemetry");
 
 builder.Services.AddCors(options =>
