@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddObservability("SampleOpenTelemetry", "SampleOpenTelemetryMetrics", new Uri("http://localhost:4317"));
 builder.AddActivityBaggagePropagation();
-
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

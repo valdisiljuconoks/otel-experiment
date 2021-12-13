@@ -1,4 +1,5 @@
 version: "2"
+
 services:
   zipkin-all-in-one:
     image: openzipkin/zipkin:latest
@@ -22,6 +23,7 @@ services:
     ports:
       - "8888:8888"   # Prometheus metrics exposed by the collector
       - "8889:8889"   # Prometheus exporter metrics
+      - "55679:55679" # zPages extension
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver
     depends_on:

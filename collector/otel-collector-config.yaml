@@ -17,7 +17,7 @@ exporters:
     endpoint: "0.0.0.0:8889"
 
   logging:
-    #loglevel: debug
+    loglevel: debug
 
   zipkin:
     endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
@@ -40,6 +40,26 @@ exporters:
     headers:
       Authorization: "Bearer 12345"
 
+  otlp:
+    endpoint: tempo-eu-west-0.grafana.net:443
+    headers:
+      authorization: Basic MTMzNjY5OmV5SnJJam9pT0RoaU9ETm1ORE5oTmprMVpHTXpPRFZtWXpGbFlUUm1NVFkwT0RRd01HWmlORFUyTnpoak55SXNJbTRpT2lKMFpXMXdieTFyWlhraUxDSnBaQ0k2TlRjMk1EWTVmUT09
+
+  loki/json:
+    endpoint: "https://137159:eyJrIjoiYjU2NDQ5N2YyYmYyOTJjNGM1MTRlNWQ0ODUyYWJhNWM2ZDExMDUxNiIsIm4iOiJ0ZXN0aW5nMiIsImlkIjo1NzYwNjl9@logs-prod-eu-west-0.grafana.net/loki/api/v1/push"
+    format: json
+    labels:
+      attributes:
+        container_name: ""
+        source: ""
+        traceid: "traceid"
+        spanid: "spanid"
+      resource:
+        "service.name": "service_name"
+        "service.instance.id": "service_instance_id"
+        "traceid": "traceid"
+        "spanid": "spanid"
+
   # elasticsearch:
   #   endpoints: [https://otel-logs-elasticsearch.es.westeurope.azure.elastic-cloud.com:9243]
   #   cloudid: otel-logs-elasticsearch:d2VzdGV1cm9wZS5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo5MjQzJDIyNzBkOTJkYWRiOTQxNTdhNjliYmE5MmZjNGQ5MmMxJGNhMDFiYTI1ZWZkODQ2YzlhMDg3NzFkMzlhMmUyODQx
@@ -50,17 +70,27 @@ exporters:
   #   region: "eu-north-1"
   #   endpoint: "logs.eu-north-1.amazonaws.com"
 
+extensions:
+  health_check:
+  pprof:
+  zpages:
+    endpoint: 0.0.0.0:55679
+
 service:
+  extensions: [zpages, health_check, pprof]
+  telemetry:
+    logs:
+      level: "debug"
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, zipkin, azuremonitor]
+      exporters: [zipkin, azuremonitor, otlp]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, prometheus]
+      exporters: [prometheus]
     logs:
       receivers: [otlp]
       processors: []
-      exporters: [logging, file]
+      exporters: [logging, file, loki/json]
