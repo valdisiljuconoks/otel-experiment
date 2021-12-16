@@ -16,7 +16,7 @@ diag.setLogger(
 
 const provider = new WebTracerProvider({
     resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: "SampleOpenTelemetry"
+        [SemanticResourceAttributes.SERVICE_NAME]: "Commerce.Front"
     })
 });
 
@@ -50,7 +50,7 @@ registerInstrumentations({
     ]
 });
 
-const tracer = trace.getTracer('SampleOpenTelemetry');
+const tracer = trace.getTracer('Commerce.Front');
 
 window.onload = () => {
     const btn = document.getElementById('ajax-call-button');

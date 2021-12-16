@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 
-namespace FunctionApp1.Infrastructure;
+namespace Commerce.Batch.Infrastructure;
 
 public static class ActivitySourceExtensions
 {

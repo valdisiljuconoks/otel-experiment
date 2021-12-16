@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "SampleOpenTelemetry": {
+    "Commerce.Front": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

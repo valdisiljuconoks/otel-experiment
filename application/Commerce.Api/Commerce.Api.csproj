@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SampleOpenTelemetry\SampleOpenTelemetry.csproj" />
+    <ProjectReference Include="..\Commerce.Common\Commerce.Common.csproj" />
   </ItemGroup>
 
 </Project>

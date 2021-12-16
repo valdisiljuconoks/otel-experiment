@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 
-namespace FunctionApp1.Infrastructure;
+namespace Commerce.Batch.Infrastructure;
 
 public static class OpenTelemetryLoggingExtensions
 {

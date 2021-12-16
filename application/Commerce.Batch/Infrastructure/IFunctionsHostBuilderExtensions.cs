@@ -6,7 +6,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace FunctionApp1.Infrastructure;
+namespace Commerce.Batch.Infrastructure;
 
 public static class IFunctionsHostBuilderExtensions
 {
@@ -16,7 +16,7 @@ public static class IFunctionsHostBuilderExtensions
         {
             b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName));
             b.AddHttpClientInstrumentation();
-            b.AddSource("AzureFunctionsOpenTelemetry");
+            b.AddSource(serviceName);
             b.AddOtlpExporter(options => options.Endpoint = collectorUri);
         });
 

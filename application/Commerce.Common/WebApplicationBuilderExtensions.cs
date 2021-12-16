@@ -7,7 +7,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace OpenTelemetry.Common;
+namespace Commerce.Common;
 
 public static class WebApplicationBuilderExtensions
 {

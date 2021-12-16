@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
-using FunctionApp1.Infrastructure;
+using Commerce.Batch.Infrastructure;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace FunctionApp1;
+namespace Commerce.Batch;
 
 public class Function1
 {
@@ -18,7 +18,7 @@ public class Function1
         ServiceBusReceivedMessage myQueueItem,
         ILogger log)
     {
-        using var activity = _source.StartActivity("Handling SB message in AzFunc...", myQueueItem);
+        using var activity = _source.StartActivity("Handling checkout message in Batch functions...", myQueueItem);
 
         log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
     }
