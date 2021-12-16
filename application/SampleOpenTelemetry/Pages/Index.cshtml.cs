@@ -27,17 +27,18 @@ public class IndexModel : PageModel
         _sender = client.CreateSender("otel-sameple-queue");
     }
 
+    [BindProperty] public string? TraceId { get; set; }
     [BindProperty] public string? ActionId { get; set; }
-    [BindProperty] public string ProductId { get; set; }
+    [BindProperty] public string? ProductId { get; set; }
 
     public IActionResult OnGet()
     {
-        _activitySource.StartActivity("On GET.");
-
         ActionId = Activity.Current?.Id;
+        TraceId = Activity.Current?.TraceId.ToString();
 
         return Page();
     }
+
 
     public async Task<IActionResult> OnPost()
     {
@@ -52,15 +53,10 @@ public class IndexModel : PageModel
         {
             activity?.AddBaggage("product.id", ProductId);
 
-            var str1 = await _httpClient.GetStringAsync("https://www.google.com");
-
-            await _httpClient.GetStringAsync("https://localhost:7259/compute");
-
-            _logger.LogInformation("Response1 length: {Length}", str1.Length);
+            await _httpClient.GetStringAsync("https://localhost:7259/checkout");
 
             // emitting message on the queue
-            var serviceBusMessage = new ServiceBusMessage("testing");
-
+            var serviceBusMessage = new ServiceBusMessage("checkout");
             foreach (var baggage in Activity.Current?.Baggage ?? Array.Empty<KeyValuePair<string, string?>>())
             {
                 serviceBusMessage.ApplicationProperties.Add(baggage.Key, baggage.Value);

@@ -22,23 +22,98 @@
     -->
     <meta name="traceparent" content="@Model.ActionId">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body, input, button {
+            font-family: monospace;
+            font-size: 2rem;
+        }
+
+        .container {
+            margin: 300px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .trace-id {
+            font-size: 1.8rem;
+        }
+
+        .activity-id {
+            font-size: 1.2rem;
+        }
+
+        form {
+            margin-bottom: 100px;
+            width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form {
+            margin-bottom: 50px;
+        }
+
+        button {
+            background-color: #2b83d2;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            background-color: #0074cc;
+        }
+
+        button:active {
+            background-color: #0063bf;
+        }
+
+        .checkout {
+            display: flex;
+        }
+
+        .checkout-button {
+            margin-left: auto;
+        }
+    </style>
 </head>
 <body>
 
-<div>
-    <div>Action ID: @(Model.ActionId ?? "--")</div>
-
+<div class="container">
     <form method="post">
-        <label asp-for="ProductId">Product Id:</label>
-        <input asp-for="ProductId"/>
-        @Html.AntiForgeryToken()
+        <div class="form">
+            <div class="form-group">
+                <label asp-for="ProductId">Product Id:</label>
+                <input asp-for="ProductId"/>
+                <label>-,-- €</label>
+            </div>
 
-        <button type="button" id="ajax-call-button">Make AJAX call</button>
-        <br/>
-        <button type="submit">Submit</button>
+            <div>
+                <button type="button" id="ajax-call-button">Check Availability</button>
+                <button type="button" id="ajax-call-button">Get Price</button>
+            </div>
+        </div>
+        <div class="checkout">
+            <div class="checkout-button">
+                <button type="submit">Checkout</button>
+            </div>
+        </div>
 
         <input asp-for="ActionId" type="hidden"/>
+        @Html.AntiForgeryToken()
     </form>
+
+    <div class="trace-id"><label>Trace ID:</label> @(Model.TraceId ?? "--")</div>
+    <div class="activity-id"><label>Action ID:</label> @(Model.ActionId ?? "--")</div>
+
 </div>
 
 <script type="text/javascript" src="/dist/main.js"></script>

@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddObservability("AnotherSampleOpenTelemetry", "MyApplicationMetrics", new Uri("http://localhost:4317"));
 builder.AddActivityBaggagePropagation();
 
-var activitySource = new ActivitySource("AnotherSampleOpenTelemetry");
-
+builder.Services.AddTransient(_ => new ActivitySource("AnotherSampleOpenTelemetry"));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("_FrontendCors",
@@ -24,19 +23,25 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors();
-
 app.MapGet("/", () => Results.Ok("Awaiting for requests..."));
 
-app.Map("/compute", async (HttpContext context) =>
+app.Map("/checkout", async (HttpContext context, ActivitySource activitySource) =>
 {
-    using (var _ = activitySource.StartActivity("Compute data", ActivityKind.Server)) { await Task.Delay(500); }
+    using (var _ = activitySource.StartActivity("Checkout sales order"))
+    {
+        await Task.Delay(500);
+    }
 
     return Results.Ok();
 }).RequireCors("_FrontendCors");
 
-app.Map("/compute-for-frontend", async (HttpContext context) =>
+
+app.Map("/get-availability", async (HttpContext context, ActivitySource activitySource) =>
 {
-    using (var _ = activitySource.StartActivity("Frontend compute data", ActivityKind.Server)) { await Task.Delay(1200); }
+    using (var _ = activitySource.StartActivity("Querying database for availability..."))
+    {
+        await Task.Delay(1200);
+    }
 
     return Results.Ok();
 }).RequireCors("_FrontendCors");
