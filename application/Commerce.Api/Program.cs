@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Commerce.Api;
 using Commerce.Common;
 
 // This is required if the collector doesn't expose an https endpoint
@@ -42,10 +43,16 @@ app.Map("/get-availability", async (HttpContext context, ActivitySource activity
 {
     using (var _ = activitySource.StartActivity("Querying database for availability..."))
     {
-        var counter = meter.CreateCounter<int>("get_availability_requests");
-        counter.Add(1);
+        var counter = meter.GetCounter<int>("get_availability_requests");
+        counter?.Add(1);
 
-        await Task.Delay(1200);
+        var histogram = meter.CreateHistogram<float>("get_availability_duration", "ms");
+
+        var duration = Random.Shared.Next(1000, 1500);
+
+        await Task.Delay(duration);
+
+        histogram.Record(duration, KeyValuePair.Create<string, object?>("Product.Id", "54321"));
     }
 
     return Results.Ok();
