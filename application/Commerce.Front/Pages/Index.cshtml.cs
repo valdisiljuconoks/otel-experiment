@@ -46,6 +46,8 @@ public class IndexModel : PageModel
         {
             activity?.AddBaggage("product.id", ProductId);
 
+            _logger.LogInformation("Sending request out to API endpoint to checkout");
+
             await _httpClient.GetStringAsync("https://localhost:7259/checkout");
 
             // emitting message on the queue

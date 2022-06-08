@@ -6,7 +6,7 @@ AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddObservability("Commerce.Front", "SampleOpenTelemetryMetrics", new Uri("http://localhost:4317"));
+builder.AddObservability("Commerce.Front", "SampleOpenTelemetryMetrics", new Uri("http://localhost:4320"));
 builder.AddActivityBaggagePropagation();
 builder.Services.AddRazorPages();
 

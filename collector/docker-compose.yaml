@@ -1,11 +1,6 @@
-version: "2"
+version: "3"
 
 services:
-  zipkin-all-in-one:
-    image: openzipkin/zipkin:latest
-    ports:
-      - "9411:9411"
-
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -13,8 +8,62 @@ services:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-local-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-data:/tmp/loki/
+    command: -config.file=/etc/loki/local-config.yaml
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo-local.yaml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"  # tempo
+      - "9411:9411"  # zipkin receiver
+      - "4317:4317"  # grpc
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./promtail-log:/var/log
+      - ./local-promtail.yaml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    volumes:
+    - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    ports:
+      - "3000:3000"
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
 
   otel-collector:
+    container_name: otel_collector
     image: otel/opentelemetry-collector-contrib-dev:latest
     command: ["--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}"]
     volumes:
@@ -24,7 +73,8 @@ services:
       - "8888:8888"   # Prometheus metrics exposed by the collector
       - "8889:8889"   # Prometheus exporter metrics
       - "55679:55679" # zPages extension
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
+      - "4320:4317"   # OTLP gRPC receiver
+      - "4321:4318"   # OTLP HTTP receiver
     depends_on:
-      - zipkin-all-in-one
+      - grafana
+      - loki

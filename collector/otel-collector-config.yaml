@@ -1,26 +1,32 @@
 receivers:
   otlp:
+    # cors:
+    #   allowed_origins:
+    #     - https://localhost:7258
+    #   allowed_headers:
+    #     - "*"
+    #   max_age: 7200
     protocols:
       grpc:
       http:
-        cors_allowed_origins:
-        - https://localhost:7258
-        cors_allowed_headers:
-        - "*"
+        # cors_allowed_origins:
+        # - https://localhost:7258
+        # cors_allowed_headers:
+        # - "*"
 
 processors:
   batch:
-  # queued_retry:
 
 exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
 
   logging:
-    loglevel: debug
 
   zipkin:
-    endpoint: "http://zipkin-all-in-one:9411/api/v2/spans"
+    endpoint: "http://tempo:9411/api/v2/spans"
+    tls:
+      insecure: true
     format: proto
 
   file:
@@ -41,12 +47,14 @@ exporters:
       Authorization: "Bearer 12345"
 
   otlp:
-    endpoint: tempo-eu-west-0.grafana.net:443
-    headers:
-      authorization: Basic MTMzNjY5OmV5SnJJam9pT0RoaU9ETm1ORE5oTmprMVpHTXpPRFZtWXpGbFlUUm1NVFkwT0RRd01HWmlORFUyTnpoak55SXNJbTRpT2lKMFpXMXdieTFyWlhraUxDSnBaQ0k2TlRjMk1EWTVmUT09
+    endpoint: "http://tempo:4317"  # 9411 (zipkin)
+    tls:
+      insecure: true
 
   loki/json:
-    endpoint: "https://137159:eyJrIjoiYjU2NDQ5N2YyYmYyOTJjNGM1MTRlNWQ0ODUyYWJhNWM2ZDExMDUxNiIsIm4iOiJ0ZXN0aW5nMiIsImlkIjo1NzYwNjl9@logs-prod-eu-west-0.grafana.net/loki/api/v1/push"
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    tls:
+      insecure: true
     format: json
     labels:
       attributes:
@@ -59,16 +67,6 @@ exporters:
         "service.instance.id": "service_instance_id"
         "traceid": "traceid"
         "spanid": "spanid"
-
-  # elasticsearch:
-  #   endpoints: [https://otel-logs-elasticsearch.es.westeurope.azure.elastic-cloud.com:9243]
-  #   cloudid: otel-logs-elasticsearch:d2VzdGV1cm9wZS5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo5MjQzJDIyNzBkOTJkYWRiOTQxNTdhNjliYmE5MmZjNGQ5MmMxJGNhMDFiYTI1ZWZkODQ2YzlhMDg3NzFkMzlhMmUyODQx
-
-  # awscloudwatchlogs:
-  #   log_group_name: "otel-research-testing-logs"
-  #   log_stream_name: "otel-research-testing-logs-stream"
-  #   region: "eu-north-1"
-  #   endpoint: "logs.eu-north-1.amazonaws.com"
 
 extensions:
   health_check:
@@ -85,7 +83,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [zipkin, azuremonitor, otlp]
+      exporters: [azuremonitor, otlp]
     metrics:
       receivers: [otlp]
       processors: [batch]

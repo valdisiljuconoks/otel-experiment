@@ -8,7 +8,7 @@ AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddObservability("Commerce.Api", "Commerce.Api.Metrics", new Uri("http://localhost:4317"));
+builder.AddObservability("Commerce.Api", "Commerce.Api.Metrics", new Uri("http://localhost:4320"));
 builder.AddActivityBaggagePropagation();
 
 builder.Services.AddTransient(_ => new ActivitySource("Commerce.Api"));
@@ -28,11 +28,14 @@ var app = builder.Build();
 app.UseCors();
 app.MapGet("/", () => Results.Ok("Awaiting for requests..."));
 
-app.Map("/checkout", async (HttpContext context, ActivitySource activitySource) =>
+app.Map("/checkout", async (HttpContext context, ActivitySource activitySource, ILogger<CheckoutProcess> logger) =>
 {
     using (var _ = activitySource.StartActivity("Checkout sales order"))
     {
+        logger.LogInformation("Starting to process checkout...");
         await Task.Delay(500);
+
+        logger.LogInformation("Checkout processed.");
     }
 
     return Results.Ok();
@@ -59,3 +62,5 @@ app.Map("/get-availability", async (HttpContext context, ActivitySource activity
 }).RequireCors("_FrontendCors");
 
 app.Run();
+
+public class CheckoutProcess { }
